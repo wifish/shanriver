@@ -33,15 +33,11 @@
             p = random_positin();
             data.push({"id":i,"cx":p[0],"cy":p[1]})
         }      
-
-        console.log(data);
     }          
 
     //刷新数据
     function update_data(){
         var p ;
-
-        
 
         if(data.length === 0 ) {return;}
 
@@ -84,7 +80,7 @@
         //更新节点
         node.data(data)
             .transition()
-            .duration(function(d,i){return 3999 })
+            .duration(function(d,i){return 29999 })
             .delay(0)
             .attr("cx",function(d,i){return d.cx;})
             .attr("cy",function(d,i){return d.cy;})
@@ -115,8 +111,9 @@
         //setTimeout(redraw,1000);        
         //redraw();
 
-        //每个两秒执行一次
-        window.setInterval("redraw()",4000);
+        //每个30秒执行一次
+        redraw()
+        window.setInterval("redraw()",30000);
     }
 
     //
