@@ -17,7 +17,7 @@
 <script type="text/javascript">
 
     var config = {"nodenum":7};
-
+    var color = d3.scale.category20();
     var data = [];
 
     var container = d3.select("#container");
@@ -26,21 +26,38 @@
     var node ,link;          
 
 
-    //预处理数据     
-    function process_data(){
+    //生成数据     
+    function generate_data(){
         var p ;
         for(var i=0 ;i<config.nodenum;i++){
             p = random_positin();
             data.push({"id":i,"cx":p[0],"cy":p[1]})
         }      
+
+        console.log(data);
     }          
+
+    //刷新数据
+    function update_data(){
+        var p ;
+
+        
+
+        if(data.length === 0 ) {return;}
+
+        data.forEach(function(d){
+            p = random_positin();
+            d.cx = p[0];
+            d.cy = p[1];
+        });    
+
+        //console.log(data);    
+    }
 
     //绘图
     function draw(){
       
-      //console.log(data)   ;
-
-      node = svg.selectAll(".node")
+        node = svg.selectAll(".node")
               .data(data)
               .enter()
               .append("circle")
@@ -48,33 +65,38 @@
               .attr("cx",function(d,i){return d.cx;})
               .attr("cy",function(d,i){return d.cy;})              
               .attr("r",function(d,i){return Math.random() * 20 + 10})
-              .style({"fill":"#CC9933",
-                "stroke-width":0,
-                "stroke":"#99CC99",
-                "opacity":0.7})
+              .attr("fill",function(d,i){return color(d.cx + d.cy);})
+              .style({
+                "stroke-width":7,
+                "stroke":"#ffffff",
+                "opacity":0.3})
               ;       
     }
 
     //
     function redraw(){
         
-        var old_height = config.height;    
-        var swap = window.innerHeight -  old_height ;
-        var buff = swap > 0 ? 1 : -1;
-
-
         set_size();    
         
+        //更新数据
+        update_data();
 
-        //node.attr("cx",function(d,i){return d.cx;})
-        //    .attr("cy",function(d,i){return d.cy + swap * buff ;});         
-
-               
+        //更新节点
+        node.data(data)
+            .transition()
+            .duration(function(d,i){return 3999 })
+            .delay(0)
+            .attr("cx",function(d,i){return d.cx;})
+            .attr("cy",function(d,i){return d.cy;})
+            .attr("r",function(d,i){return Math.random() * 20 + 10})
+            .attr("fill",function(d,i){return color(d.cx + d.cy);})
+            ;         
+                                     
     }
 
 
 
-    //返回任意边上坐标
+    //返回边框上任意坐标
     function random_positin(){
 
         var x = Math.random() * (config.width - 0) + 0 ;
@@ -90,8 +112,11 @@
     //动画
     function animation(){
 
-        
-        
+        //setTimeout(redraw,1000);        
+        //redraw();
+
+        //每个两秒执行一次
+        window.setInterval("redraw()",4000);
     }
 
     //
@@ -112,14 +137,14 @@
 
 
       //预处理数据
-      process_data();
+      generate_data();
 
       //初始化模块
 
       //绘图
       draw();
 
-      //animation();
+      animation();
     }        
 
     window.onload = function(){init();}   
