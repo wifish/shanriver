@@ -38,9 +38,9 @@
   <section class = "header">
       <h1 class="project-name">Shanriver</h1>
       <h2 class="project-tagline">@匠</h2>
-      <a href="circle.html" class="btn">The World</a>
-      <a href="circle.html" class="btn">The Mountain</a>
-      <a href="circle.html" class="btn">The Rirver</a>
+      <a href="mountain.html" class="btn">戒&nbsp;&nbsp;&nbsp;&nbsp;山</a>
+      <a href="river.html" class="btn">戒&nbsp;&nbsp;&nbsp;&nbsp;水</a>
+      <a href="world.html" class="btn">戒逍遥</a>
   </section>
 
   <div id="container"></div>
@@ -48,7 +48,7 @@
 
 <script type="text/javascript">
 
-    var config = {"nodenum":7};
+    var config = {"nodenum":30};
     var color = d3.scale.category20();
     var data = [];
 
@@ -85,17 +85,18 @@
     //绘图
     function draw(){
       
-        node = svg.selectAll(".node")
+        node = svg.append("g")
+              .selectAll(".node")
               .data(data)
               .enter()
               .append("circle")
               .attr("class","node")
               .attr("cx",function(d,i){return d.cx;})
               .attr("cy",function(d,i){return d.cy;})              
-              .attr("r",function(d,i){return Math.random() * 20 + 10})
+              .attr("r",function(d,i){return Math.random() * config.width/100 + config.width/170})
               .attr("fill",function(d,i){return color(d.cx + d.cy);})
               .style({
-                "stroke-width":7,
+                "stroke-width":1,
                 "stroke":"#ffffff",
                 "opacity":0.3})
               ;       
@@ -126,7 +127,7 @@
 
         var x = Math.random() * (config.width - 0) + 0 ;
         var y = Math.random() * (config.height - 0) + 0;
-        var i = Math.floor(Math.random() * 3) ;        
+        var i = Math.floor(Math.random() * 4) ;        
 
         var base_array = [[x,0],[x,config.height],[0,y],[config.width,y]];
 
