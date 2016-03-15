@@ -16,8 +16,8 @@
         body {
           color: #fff;
           text-align: center;
-          background-color: #159957;
-          background-image: linear-gradient(120deg, #155799, #159957); 
+          //background-color: #159957;
+          //background-image: linear-gradient(120deg, #155799, #159957); 
         }
 
         .header {
@@ -30,6 +30,17 @@
           margin-top:-149px; 
 
         }
+
+        .zoomer {
+          position:absolute;
+          width:80px;
+          height:200px;
+          left:20%;
+          top:50%;
+          background-color: #071434;  
+          //opacity:0.3;
+        }
+
     </style>
 </head>
 
@@ -41,8 +52,86 @@
 
   <div id="container"></div>
 
+  <div id="zoomer" class="zoomer"></div>
+
 
 <script type="text/javascript">
+
+
+  var margin = {"top":20,"right":10,"bottom":20,"left":10}
+
+  var config = {"width":80,"height":200,"R":10,"r":5}
+
+  var point_data = [{"id":1,"type":"start"},
+                    {"id":2,"type":"end"},
+                    {"id":3,"type":"move"}]
+  
+  var drag = d3.behavior.drag()
+            .on("drag", dragmove); 
+            
+  
+  var zoomer = d3.select("#zoomer")
+                .append("svg")
+                .attr("width",config.width)
+                .attr("height",config.height)
+                ;
+
+  var scale = d3.scale.linear()
+            .domain([margin.top + config.R + config.r , config.height - margin.bottom - config.R - config.r])
+            .range([0,1]);                
+
+  var line = zoomer.append("line")               
+              .attr("x1",config.width/2 )
+              .attr("y1",margin.top)
+              .attr("x2",config.width/2 )
+              .attr("y2",config.height - margin.bottom )
+              .attr("fill",function(d,i){ return "#ffffff" ; })
+              .attr("stroke",function(d,i){ return "#ffffff";})
+              .attr("stroke-width",".1em");            
+  
+
+  var point = zoomer.selectAll("circle")  
+                .data(point_data)
+                .enter()
+                .append("circle")
+                .attr("cx",function(d,i){return config.width / 2;})
+                .attr("cy",function(d,i){
+                  if(d.type === "start"){
+                    return 0 + margin.top;
+                  }else if(d.type === "end"){
+                    return config.height - margin.top ;
+                  }else{
+                    return config.height / 2;  
+                  }  
+                })
+                .attr("r",function(d,i){ return d.type === "move" ? config.r : config.R; })
+                .attr("fill",function(d,i){ return d.type === "move" ? "#0097FA" : "#071434"; })
+                .attr("stroke",function(d,i){ return "#ffffff";})
+                .attr("stroke-width",function(d,i){return ".08em";});
+
+  
+  var mover = d3.selectAll("circle")
+              .filter(function(d){return d.type === "move"})
+              .call(drag);
+
+
+  function dragmove(d) {  
+      var cx,cy = d3.event.y;
+      if(d3.event.y > config.height - margin.bottom - config.R - config.r){
+        cy = config.height - margin.bottom - config.R - config.r;
+      }
+
+      if(d3.event.y < margin.top + config.R + config.r){
+        cy = margin.top + config.R + config.r;
+      }
+      d3.select(this)
+        .attr("cx", config.width/2)
+        .attr("cy", cy );
+
+
+      console.log(scale(cy));  
+  }
+  
 
     
 
