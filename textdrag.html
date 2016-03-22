@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>拖拽曲线</title>
+    <script type="text/javascript" src="resource/lib/d3.v3.js"></script>    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="resource/stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="resource/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="resource/stylesheets/github-light.css" media="screen">
+
+    <style type="text/css">
+        
+        body {
+          	//color: #fff;
+          	text-align: center;
+          	//background-color: #159957;
+          	//background-image: linear-gradient(120deg, #155799, #159957); 
+        }
+		
+        .header {
+          	position:absolute;
+          	width:650px;
+          	height:298px;
+          	left:50%;
+          	top:50%;
+          	margin-left:-325px; 
+          	margin-top:-149px; 
+        }
+
+        #container{
+        	width :100% ;
+        	height:61em;	        	
+        }
+
+        .axis path,
+		.axis line {
+  			fill: none;
+  			stroke: #000;
+  			shape-rendering: crispEdges;
+		}
+
+		.x.axis path {
+  			//display: none;
+		}
+
+		.line {
+  			fill: none;
+  			stroke: steelblue;
+  			stroke-width: .15em;
+		}
+
+    </style>
+</head>
+
+<body>
+
+  	<div id="container"></div>
+
+<script type="text/javascript">
+
+    var margin = {top: 20, right: 80, bottom: 30, left: 50};
+    var config = {
+
+    	width : 960 - margin.left - margin.right,
+    	height : 500 - margin.top - margin.bottom	
+    };
+
+    var color = d3.scale.category20();
+
+    var data = [{"id":1,"x":50,"y":200},{"id":3,"x":200,"y":10}];                
+
+    var container = d3.select("#container");
+
+    var svg ,path,circle,text;    
+
+    //path 生成器
+	   var line = d3.svg.line()
+    	.interpolate("cardinal")
+    	.x(function(d) {return d.x;})
+    	.y(function(d) {return d.y;});
+
+    //定义拖拽  
+    var drag = d3.behavior.drag()
+            .on("drag", dragmove); 
+            
+        
+    //绘图
+    function draw(){
+    	
+
+      path = svg.append("path")
+                    .attr("d", line(data))
+                    .attr("class", "line");
+
+      circle = svg.selectAll("circle")
+                  .data(data)
+                  .enter()
+                  .append("circle")
+                  .attr("cx",function(d){return d.x;})
+                  .attr("cy",function(d){return d.y;})
+                  .attr("r",20)
+                  .attr("fill","#159957");
+
+
+      text =  svg.append("text")
+                    .attr("x",function(){
+                          return (parseInt(circle[0][0].attributes.cx.value) + parseInt(circle[0][1].attributes.cx.value))/2;
+                    })
+                    .attr("y",function(){
+                          return (parseInt(circle[0][0].attributes.cy.value) + parseInt(circle[0][1].attributes.cy.value))/2;
+                    })
+                    .text("拖拽")
+                    .call(drag);
+    }
+
+    function dragmove(d) {  
+
+      //更新text的位置
+      text.attr("x", d3.event.x )
+        .attr("y", d3.event.y );
+
+      //更新path数据
+      var linedata = [{"id":1,"x":50,"y":200},
+                      {"id":2,"x":d3.event.x,"y":d3.event.y},
+                      {"id":3,"x":200,"y":10}];  
+      //更新path                                
+      path.attr("d", line(linedata))；
+
+    } 
+
+    //
+    function redraw(){        
+        set_size();                                                       
+    }
+
+    //动画
+    function animation(){
+
+        //setTimeout(redraw,1000);        
+        //redraw();
+
+        //每个30秒执行一次
+        //redraw()
+        //window.setInterval("redraw()",30000);
+    }
+
+
+    function init_data(){
+    	
+    }
+
+    //
+    function set_size(){
+      //config.width = window.innerWidth * 0.50;
+      //config.height = window.innerHeight * 0.8;
+
+      	svg = container.append("svg")
+      		.attr("width",config.width + margin.left + margin.right)
+         	.attr("height",config.height + margin.top + margin.bottom)
+  			.append("g")
+    		.attr("transform", "translate(" + margin.left + "," + margin.top  + ")");
+    }
+
+    //初始化
+    function init(){
+      	
+      	set_size();
+
+      	//预处理数据
+      	//generate_data();
+
+      	//初始化模块
+
+      	//绘图
+      	draw();
+
+      	//开启动画
+      	//animation();
+    }        	
+ 
+    window.onload = function(){init();}   
+    window.onresize = function(){redraw();}
+
+</script>
+</body>
+</html>
+
+
